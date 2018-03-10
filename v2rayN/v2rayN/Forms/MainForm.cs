@@ -640,6 +640,22 @@ namespace v2rayN.Forms
             Application.Exit();
         }
 
+        private void menuClipboardImportVmess_Click(object sender, EventArgs e)
+        {
+            VmessItem vmessItem = V2rayConfigHandler.ImportFromClipboardConfig(out string msg);
+            if (ConfigHandler.AddServer(ref config, vmessItem, -1) == 0)
+            {
+                //刷新
+                RefreshServers();
+                LoadV2ray();
+                ShowForm();
+            }
+            else
+            {
+                UI.Show("操作失败，请检查重试");
+            }
+        }
+
         private void menuUpdate_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(Global.UpdateUrl);
@@ -830,6 +846,9 @@ namespace v2rayN.Forms
             menuSysAgentEnabled.Checked =
             menuSysAgentMode.Enabled = isChecked;
         }
+
+
+
         #endregion
 
 
