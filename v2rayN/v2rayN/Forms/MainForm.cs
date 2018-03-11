@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using v2rayN.Handler;
 using v2rayN.HttpProxyHandler;
 using v2rayN.Mode;
+using v2rayN.Tool;
+using static v2rayN.Forms.PerPixelAlphaForm;
 
 namespace v2rayN.Forms
 {
@@ -639,6 +643,77 @@ namespace v2rayN.Forms
             //System.Environment.Exit(System.Environment.ExitCode);
             Application.Exit();
         }
+
+        void splash_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ShowForm();
+        }
+
+        private void menuScreenQRCodeScan_Click(object sender, EventArgs e)
+        {
+            Thread.Sleep(100);
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                Point screen_size = Utils.GetScreenPhysicalSize();
+                using (Bitmap fullImage = new Bitmap(screen_size.X,
+                                                screen_size.Y))
+                {
+                    using (Graphics g = Graphics.FromImage(fullImage))
+                    {
+                        g.CopyFromScreen(screen.Bounds.X,
+                                         screen.Bounds.Y,
+                                         0, 0,
+                                         fullImage.Size,
+                                         CopyPixelOperation.SourceCopy);
+                    }
+                    for (int i = 0; i < 100; i++)
+                    {
+                        double stretch;
+                        Rectangle cropRect = Scan.GetScanRect(fullImage.Width, fullImage.Height, i, out stretch);
+                        if (cropRect.Width == 0)
+                            break;
+
+                        string url;
+                        Rectangle rect;
+                        if (stretch == 1 ? Scan.ScanQRCode(screen, fullImage, cropRect, out url, out rect) : Scan.ScanQRCodeStretch(screen, fullImage, cropRect, stretch, out url, out rect))
+                        {
+                            
+                            VmessItem vmessItem = V2rayConfigHandler.ImportFromStrConfig(out string msg, url);
+                            if (vmessItem != null && ConfigHandler.AddServer(ref config, vmessItem, -1) == 0)
+                            {
+                                QRCodeSplashForm splash = new QRCodeSplashForm();
+
+                                splash.FormClosed += splash_FormClosed;
+
+
+                                splash.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
+                                double dpi = Screen.PrimaryScreen.Bounds.Width / (double)screen_size.X;
+                                splash.TargetRect = new Rectangle(
+                                    (int)(rect.Left * dpi + screen.Bounds.X),
+                                    (int)(rect.Top * dpi + screen.Bounds.Y),
+                                    (int)(rect.Width * dpi),
+                                    (int)(rect.Height * dpi));
+                                splash.Size = new Size(fullImage.Width, fullImage.Height);
+                                splash.Show();
+
+                                //刷新
+                                RefreshServers();
+                                LoadV2ray();
+
+                                //扫到一个vmess的二维码即退出
+                                break;
+
+                            }
+                            else
+                            {
+                                UI.Show(msg);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void menuClipboardImportVmess_Click(object sender, EventArgs e)
         {

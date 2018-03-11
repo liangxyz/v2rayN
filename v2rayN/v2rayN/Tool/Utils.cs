@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -415,6 +417,31 @@ namespace v2rayN
 
         #endregion
 
+        #region 获取显示屏大小
+
+        public enum DeviceCap
+        {
+            DESKTOPVERTRES = 117,
+            DESKTOPHORZRES = 118,
+        }
+
+        public static Point GetScreenPhysicalSize()
+        {
+            using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                IntPtr desktop = g.GetHdc();
+                int PhysicalScreenWidth = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPHORZRES);
+                int PhysicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+
+                return new Point(PhysicalScreenWidth, PhysicalScreenHeight);
+            }
+        }
+
+        [DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+        #endregion
+
         #region 杂项
 
         /// <summary>
@@ -510,7 +537,7 @@ namespace v2rayN
             }
             return string.Empty;
         }
-        
+
         #endregion
 
         #region TempPath

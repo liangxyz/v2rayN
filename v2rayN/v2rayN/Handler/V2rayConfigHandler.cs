@@ -853,30 +853,45 @@ namespace v2rayN.Handler
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="msg"></param>
+        /// <param name="str"></param>
         /// <returns></returns>
         public static VmessItem ImportFromClipboardConfig(out string msg)
+        {
+            //载入配置文件 
+            string result = Utils.GetClipboardData();
+            return ImportFromStrConfig(out msg, result);
+        }
+
+
+        /// <summary>
+        /// 传入字符串来生成vmess配置
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="msg"></param>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static VmessItem ImportFromStrConfig(out string msg, string str)
         {
             msg = string.Empty;
             VmessItem vmessItem = new VmessItem();
 
             try
             {
-                //载入配置文件 
-                string result = Utils.GetClipboardData();
-                if (Utils.IsNullOrEmpty(result))
+
+                if (Utils.IsNullOrEmpty(str))
                 {
                     msg = "读取配置文件失败";
                     return null;
                 }
 
-                if (result.StartsWith(Global.vmessProtocol))
+                if (str.StartsWith(Global.vmessProtocol))
                 {
                     vmessItem.configType = (int)EConfigType.Vmess;
-                    result = result.Substring(Global.vmessProtocol.Length);
-                    result = Utils.Base64Decode(result);
+                    str = str.Substring(Global.vmessProtocol.Length);
+                    str = Utils.Base64Decode(str);
 
                     //转成Json
-                    VmessQRCode vmessQRCode = Utils.FromJson<VmessQRCode>(result);
+                    VmessQRCode vmessQRCode = Utils.FromJson<VmessQRCode>(str);
                     if (vmessQRCode == null)
                     {
                         msg = "转换配置文件失败";
@@ -896,20 +911,20 @@ namespace v2rayN.Handler
                     vmessItem.requestHost = vmessQRCode.host;
                     vmessItem.streamSecurity = vmessQRCode.tls;
                 }
-                else if (result.StartsWith(Global.ssProtocol))
+                else if (str.StartsWith(Global.ssProtocol))
                 {
                     msg = "配置格式不正确";
 
                     vmessItem.configType = (int)EConfigType.Shadowsocks;
-                    result = result.Substring(Global.ssProtocol.Length);
-                    int indexRemark = result.IndexOf("#");
+                    str = str.Substring(Global.ssProtocol.Length);
+                    int indexRemark = str.IndexOf("#");
                     if (indexRemark > 0)
                     {
-                        result = result.Substring(0, indexRemark);
+                        str = str.Substring(0, indexRemark);
                     }
-                    result = Utils.Base64Decode(result);
+                    str = Utils.Base64Decode(str);
 
-                    string[] arr1 = result.Split('@');
+                    string[] arr1 = str.Split('@');
                     if (arr1.Length != 2)
                     {
                         return null;
