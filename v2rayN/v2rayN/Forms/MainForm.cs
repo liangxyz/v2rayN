@@ -677,37 +677,37 @@ namespace v2rayN.Forms
                         Rectangle rect;
                         if (stretch == 1 ? Scan.ScanQRCode(screen, fullImage, cropRect, out url, out rect) : Scan.ScanQRCodeStretch(screen, fullImage, cropRect, stretch, out url, out rect))
                         {
-                            
+                            QRCodeSplashForm splash = new QRCodeSplashForm();
+
+                            splash.FormClosed += splash_FormClosed;
+
+
+                            splash.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
+                            double dpi = Screen.PrimaryScreen.Bounds.Width / (double)screen_size.X;
+                            splash.TargetRect = new Rectangle(
+                                (int)(rect.Left * dpi + screen.Bounds.X),
+                                (int)(rect.Top * dpi + screen.Bounds.Y),
+                                (int)(rect.Width * dpi),
+                                (int)(rect.Height * dpi));
+                            splash.Size = new Size(fullImage.Width, fullImage.Height);
+
                             VmessItem vmessItem = V2rayConfigHandler.ImportFromStrConfig(out string msg, url);
                             if (vmessItem != null && ConfigHandler.AddServer(ref config, vmessItem, -1) == 0)
                             {
-                                QRCodeSplashForm splash = new QRCodeSplashForm();
 
-                                splash.FormClosed += splash_FormClosed;
-
-
-                                splash.Location = new Point(screen.Bounds.X, screen.Bounds.Y);
-                                double dpi = Screen.PrimaryScreen.Bounds.Width / (double)screen_size.X;
-                                splash.TargetRect = new Rectangle(
-                                    (int)(rect.Left * dpi + screen.Bounds.X),
-                                    (int)(rect.Top * dpi + screen.Bounds.Y),
-                                    (int)(rect.Width * dpi),
-                                    (int)(rect.Height * dpi));
-                                splash.Size = new Size(fullImage.Width, fullImage.Height);
                                 splash.Show();
-
                                 //刷新
                                 RefreshServers();
                                 LoadV2ray();
-
-                                //扫到一个vmess的二维码即退出
-                                break;
-
                             }
                             else
                             {
+                                splash.Show();
                                 UI.Show(msg);
                             }
+
+                            //扫到一个二维码即退出
+                            break;
                         }
                     }
                 }
@@ -718,7 +718,7 @@ namespace v2rayN.Forms
         private void menuClipboardImportVmess_Click(object sender, EventArgs e)
         {
             VmessItem vmessItem = V2rayConfigHandler.ImportFromClipboardConfig(out string msg);
-            if (ConfigHandler.AddServer(ref config, vmessItem, -1) == 0)
+            if (vmessItem != null && ConfigHandler.AddServer(ref config, vmessItem, -1) == 0)
             {
                 //刷新
                 RefreshServers();
@@ -924,8 +924,12 @@ namespace v2rayN.Forms
 
 
 
+
         #endregion
 
+        private void cmsMain_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
 
+        }
     }
 }

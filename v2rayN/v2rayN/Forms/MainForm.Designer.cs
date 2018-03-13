@@ -42,6 +42,8 @@
             this.menuServers = new System.Windows.Forms.ToolStripMenuItem();
             this.menuUpdatePACList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCopyPACUrl = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuScanScreenQRCode = new System.Windows.Forms.ToolStripMenuItem();
             this.menuClipboardImportVmess = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuUpdate = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,8 +84,6 @@
             this.tsbReload = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
-            this.menuScanScreenQRCode = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsMain.SuspendLayout();
             this.cmsLv.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -125,7 +125,8 @@
             this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.cmsMain.ShowCheckMargin = true;
             this.cmsMain.ShowImageMargin = false;
-            this.cmsMain.Size = new System.Drawing.Size(216, 242);
+            this.cmsMain.Size = new System.Drawing.Size(216, 264);
+            this.cmsMain.Opening += new System.ComponentModel.CancelEventHandler(this.cmsMain_Opening);
             // 
             // menuSysAgentEnabled
             // 
@@ -190,6 +191,18 @@
             this.menuCopyPACUrl.Size = new System.Drawing.Size(215, 22);
             this.menuCopyPACUrl.Text = "复制本地PAC网址";
             this.menuCopyPACUrl.Click += new System.EventHandler(this.menuCopyPACUrl_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(212, 6);
+            // 
+            // menuScanScreenQRCode
+            // 
+            this.menuScanScreenQRCode.Name = "menuScanScreenQRCode";
+            this.menuScanScreenQRCode.Size = new System.Drawing.Size(215, 22);
+            this.menuScanScreenQRCode.Text = "二维码扫描..";
+            this.menuScanScreenQRCode.Click += new System.EventHandler(this.menuScreenQRCodeScan_Click);
             // 
             // menuClipboardImportVmess
             // 
@@ -532,18 +545,6 @@
             this.tsbClose.Text = "  最小化  ";
             this.tsbClose.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.tsbClose.Click += new System.EventHandler(this.tsbClose_Click);
-            // 
-            // menuScanScreenQRCode
-            // 
-            this.menuScanScreenQRCode.Name = "menuScanScreenQRCode";
-            this.menuScanScreenQRCode.Size = new System.Drawing.Size(215, 22);
-            this.menuScanScreenQRCode.Text = "二维码扫描..";
-            this.menuScanScreenQRCode.Click += new System.EventHandler(this.menuScreenQRCodeScan_Click);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(212, 6);
             // 
             // MainForm
             // 
