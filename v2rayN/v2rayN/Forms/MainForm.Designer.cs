@@ -84,6 +84,7 @@
             this.tsbReload = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
+            this.menuUpdateV2Ray = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsMain.SuspendLayout();
             this.cmsLv.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -117,6 +118,7 @@
             this.menuScanScreenQRCode,
             this.menuClipboardImportVmess,
             this.toolStripSeparator2,
+            this.menuUpdateV2Ray,
             this.menuUpdate,
             this.menuAbout,
             this.toolStripSeparator8,
@@ -125,7 +127,7 @@
             this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.cmsMain.ShowCheckMargin = true;
             this.cmsMain.ShowImageMargin = false;
-            this.cmsMain.Size = new System.Drawing.Size(216, 264);
+            this.cmsMain.Size = new System.Drawing.Size(216, 286);
             this.cmsMain.Opening += new System.ComponentModel.CancelEventHandler(this.cmsMain_Opening);
             // 
             // menuSysAgentEnabled
@@ -546,6 +548,13 @@
             this.tsbClose.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.tsbClose.Click += new System.EventHandler(this.tsbClose_Click);
             // 
+            // menuUpdateV2Ray
+            // 
+            this.menuUpdateV2Ray.Name = "menuUpdateV2Ray";
+            this.menuUpdateV2Ray.Size = new System.Drawing.Size(215, 22);
+            this.menuUpdateV2Ray.Text = "更新V2Ray";
+            this.menuUpdateV2Ray.Click += new System.EventHandler(this.menuUpdateV2Ray_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -635,6 +644,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuClipboardImportVmess;
         private System.Windows.Forms.ToolStripMenuItem menuScanScreenQRCode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripMenuItem menuUpdateV2Ray;
     }
 }
 

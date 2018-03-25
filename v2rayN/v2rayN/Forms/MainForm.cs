@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 using v2rayN.Handler;
@@ -729,6 +732,107 @@ namespace v2rayN.Forms
             {
                 UI.Show("操作失败，请检查重试");
             }
+        }
+
+        private void HttpDownloadFile(string url, string path, bool overwrite, Action<string, long, long> callback = null)
+        {
+            // 设置参数
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            //发送请求并获取相应回应数据
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+            //获取文件名
+            string fileName = response.Headers["Content-Disposition"];//attachment;filename=FileName.txt
+            if (string.IsNullOrEmpty(fileName))
+                fileName = response.ResponseUri.Segments[response.ResponseUri.Segments.Length - 1];
+            else
+                fileName = fileName.Remove(0, fileName.IndexOf("filename=") + 9);
+            //直到request.GetResponse()程序才开始向目标网页发送Post请求
+            using (Stream responseStream = response.GetResponseStream())
+            {
+                long totalLength = response.ContentLength;
+                //创建本地文件写入流
+                using (Stream stream = new FileStream(Path.Combine(path, fileName), overwrite ? FileMode.Create : FileMode.CreateNew))
+                {
+                    byte[] bArr = new byte[1024];
+                    int size;
+                    while ((size = responseStream.Read(bArr, 0, bArr.Length)) > 0)
+                    {
+                        stream.Write(bArr, 0, size);
+                        callback?.Invoke(fileName, totalLength, stream.Length);
+                    }
+                }
+            }
+        }
+
+        private void menuUpdateV2Ray_Click(object sender, EventArgs e)
+        {
+            string downloadUrl = "https://github.com/v2ray/v2ray-core/releases/download/{0}/";
+            string latestUrl = "https://github.com/v2ray/v2ray-core/releases/latest";
+            string downloadFileName = "v2ray-windows-64.zip";
+
+            //https的链接需设置
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            //通过latestUrl的重定向来获取v2ray的最新版本号
+            WebRequest req = WebRequest.Create(latestUrl);
+            HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+            string redirectUrl = response.ResponseUri.AbsoluteUri;
+            string version = redirectUrl.Substring(redirectUrl.LastIndexOf("/") + 1);
+
+            if (UI.ShowYesNo(string.Format("检测到最新的v2ray版本为:{0},是否下载安装?", version)) == DialogResult.Yes)
+            {
+
+                ShowMsg(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss ") + "已提交下载任务，正在排队下载(为保证快速下载安装，期间请尽量不产生其他方面代理流量)");
+                string latestDownloadUrl = string.Format(downloadUrl, version);
+
+
+                WebClient client = new WebClient();
+
+                client.DownloadProgressChanged += (sender1, args) =>
+                {
+                    ShowMsg(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss ") + string.Format("当前接收到{0}，文件大小总共{1}，进度为{2}%", Utils.HumanReadableFilesize(args.BytesReceived), Utils.HumanReadableFilesize(args.TotalBytesToReceive), args.ProgressPercentage));
+                };
+
+                client.DownloadFileCompleted += (sender2, args) =>
+                {
+                    try
+                    {
+                        CloseV2ray();
+
+                        //解压
+                        using (ZipArchive archive = ZipFile.OpenRead(downloadFileName))
+                        {
+                            foreach (ZipArchiveEntry entry in archive.Entries)
+                            {
+                                //如果是文件夹则跳过
+                                if (entry.Length == 0)
+                                    continue;
+                                entry.ExtractToFile(Path.Combine(".", entry.Name), true);
+                            }
+                        }
+
+                        Global.reloadV2ray = true;
+                        LoadV2ray();
+
+                        UI.Show("下载安装完成!");
+
+                    }
+                    catch (Exception)
+                    {
+                        if(UI.ShowYesNo("下载失败!!是否用默认浏览器下载，然后自行解压安装?") == DialogResult.Yes)
+                            System.Diagnostics.Process.Start(latestDownloadUrl + downloadFileName);
+                    }
+                    finally
+                    {
+                        //删除文件
+                        File.Delete(downloadFileName);
+                    }
+                };
+
+                //异步下载
+                client.DownloadFileAsync(new Uri(latestDownloadUrl + downloadFileName), downloadFileName);
+            }
+
         }
 
         private void menuUpdate_Click(object sender, EventArgs e)
