@@ -139,6 +139,24 @@ namespace v2rayN
 
         #region 转换函数
 
+        /// <summary>  
+        /// 转换方法  
+        /// </summary>  
+        /// <param name="size">字节值</param>  
+        /// <returns></returns>  
+        public static String HumanReadableFilesize(double size)
+        {
+            String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
+            double mod = 1024.0;
+            int i = 0;
+            while (size >= mod)
+            {
+                size /= mod;
+                i++;
+            }
+            return Math.Round(size, 2) + units[i];
+        }
+
         /// <summary>
         /// List<string>转逗号分隔的字符串
         /// </summary>

@@ -4,16 +4,15 @@ namespace v2rayN
     class Global
     {
         #region 常量
-
         /// <summary>
         /// 更新链接
         /// </summary>
-        public const string UpdateUrl = @"https://github.com/2dust/v2rayN/releases";
+        public const string UpdateUrl = @"https://github.com/Jrohy/v2rayN/releases";
 
         /// <summary>
         /// 关于链接
         /// </summary>
-        public const string AboutUrl = @"https://github.com/2dust/v2rayN";
+        public const string AboutUrl = @"https://github.com/Jrohy/v2rayN";
 
 
         /// <summary>
